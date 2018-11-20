@@ -1,59 +1,128 @@
-import React, { Component } from 'react'
-import employees from './employees'
+import React, { Component } from 'react';
+import employees from './employees';
+import Filter from './filter.js';
+
 
 class App extends Component {
+  constructor(props){
+    super(props)
+    this.state = {
+      list : [],
+      add: ''
+    };
+  }
+  //initial state for list
+  componentDidMount(){
+    this.setState((state) => {
+      //updatew salary in employee obj
+      employees.forEach((employee, i ) => {
+        //this.numToMoney(employees.salary)
+        let result = this.numToMoney(employee.salary)
+        //set the employees prop on state to employeen obj
+        employees[i].salary = result
+      })
+      state.list = employees
+      //return state
+      return state
+    })
+  }
+
+  //function for convert num to money
+  numToMoney = (number) =>{
+    //convert num to str step1
+    let str = number.toString();
+      //str to arr step2
+      let split = str.split('');
+        //add an element at the end step3
+        split.splice(-3, 0, ',');
+          // make a str again step4
+          let backToStr = split.join('');
+            //concat a $ sing in front and first decimal to end step5
+            let num = ('$' + backToStr + '.' );
+    // repeat step2
+    let firstO = num.split('');
+      // repeat step3 to add 0 at the end
+      firstO.splice(firstO.length,0,'0');
+        // repeat step4
+        let backFirst = firstO.join('');
+    //repeat step 2
+    let lastO = backFirst.split('');
+      // repeat step3
+      lastO.splice(lastO.length,0,'0')
+        //repeat step4
+        let interger = lastO.join('')
+
+    console.log(interger);
+    //return number
+    return interger
+  }
+
+//this deletes the user by using id of them
+deleteUser = (item) => {
+  console.log('this is the id',item.id);
+  let {list} = this.state;
+  list.splice(item.id,1);
+  this.setState({
+    list : list
+  });
+}
+//to add user
+addUser = () => {
+  this.setState({
+      add : this.state.list
+  })
+  console.log('yessss!!! click ma agai');
+}
+//value of user
+update = (e) => {
+  this.setState({ add: e.target.value })
+}
+
   render() {
-    console.log(employees)
+    const {list} = this.state
     return (
-      <div id='employees'>
-        <h1>Lista de empleados</h1>
-        <p>Ejercicio para aplicar como front-end en Resuelve.</p>
-        <h2>Para JS</h2>
-        <ol>
-          <li>Clona el proyecto e instala las dependencias</li>
-          <li>El archivo <code>src/App.js</code> crear una tabla que muestre todos las propiedades de los empleados cumpliendo las siguientes características</li>
-          <ul>
-            <li>El salario está en pesos mexicanos</li>
-            <li>Mostrar el salario en formato de dinero, es decir 16900 se muestra como $ 16,900.00</li>
-            <li>Si el salario tuviera decimales se deben mostrar limitados a 2 decimales, es decir 16900.333 se debe mostrar como $ 16,900.33</li>
-          </ul>
-          <li>Adicionalmente en la tabla se debe de poder</li>
-          <ul>
-            <li>Agregar empleados (Un botón al principio o final de la tabla)</li>
-            <li>Editar empleados (Un botón al principio o final de la tabla)</li>
-            <li>El nombre de la empresa no se debe poder modificar</li>
-            <li>Borrar empleados (Un botón de borrar por cada empleado)</li>
-            <li>Agregar un botón que muestre los salarios en USD, tipo de cambio de US $1 = MXN $21.50</li>
-          </ul>
-          <li>En el estado de <code>src/App.js</code> se deben de mantener</li>
-          <ul>
-            <li>Empleados</li>
-            <li>Si se están mostrando los salarios con MXN o USD</li>
-            <li>El tipo de cambio</li>
-          </ul>
-          <li>Poder filtrar empleados con un campo que permita buscar a los empleados por nombre y empresa</li>
-          <ul>
-            <li>El mismo campo debe funcionar para nombre y empresa</li>
-            <li>Se deben actualizar los resultados conforme se vayan escribiendo</li>
-          </ul>
-          <li>Agregar un botón que imprima la lista de empleados a la consola</li>
-        </ol>
-        <h2>Para CSS</h2>
-        <p>Ejecutar SASS con <code>sass -w css/main.scss:src/main.css</code></p>
-        <p>El CSS para la tabla puedes colocarlo en el archivo <code>css/main.scss</code></p>
-        <p>La tabla debe contener las siguientes características, algunas necesitarán agregar clases con CSS</p>
-          <ol>
-            <li>Las filas deben de alternar el color del fondo</li>
-            <li>Al hacer hover en una fila debe cambiar el color del fondo</li>
-            <li>Los montos deben ir alineados a la derecha</li>
-            <li>Los caracteres de los montos deben estar monoespaciados</li>
-            <li>Si el salario es menor a 10,000 mostrarlo en color rojo, si es mayor mostrarlo en color verde</li>
-            <li>Los botones de texto (como agregar nuevo empleado o imprimir a consola) deben tener fondo transparente y tener texto y borde en color verde</li>
-            <li>Al hacer hover deben de poner su color de fondo con el mismo color del borde y el texto pasa a ser color blanco, esto debe tener una transición</li>
-          </ol>
-      </div>
-    );
+    <div id='employees'>
+        <table>
+          <tbody>
+            <tr className="top_Row">
+              <th>Age</th>
+              <th>Company</th>
+              <th>Email</th>
+              <th>Id</th>
+              <th>Name</th>
+              <th>Phone</th>
+              <th>Salary</th>
+            </tr>
+              {this.state.list.map(item => {
+                return (
+            <tr className="bottom_Row" key={item.id}>
+              <td>{item.age}</td>
+              <td>{item.company}</td>
+              <td>{item.email}</td>
+              <td>{item.id}</td>
+              <td>{item.name}</td>
+              <td>{item.phone}</td>
+              <td>{item.salary}</td>
+              <a className="delete" onClick={this.deleteUser.bind(this,item)} href='#'>X</a>
+            </tr>
+              )
+            })}
+          </tbody>
+        </table>
+        <Filter list={list}/>
+        <input
+          onChange={this.update}
+          className="input_add_user"
+          type="text"
+          value={this.state.add}/>
+        <button
+          className="add_use_button"
+          onClick={this.addUser}
+          type="submit"
+          >agregar empleado</button>
+     </div>
+    )
   }
 }
 
-export default App; 
+export default App;
